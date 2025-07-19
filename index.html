@@ -3,144 +3,205 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Attendance Form</title>
+  <title>Anax Daily Attendance</title>
   <style>
+    @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap');
+
     body {
-      font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      font-family: 'Roboto', sans-serif;
+      background-color: #f5f7fa;
       margin: 0;
-      padding: 0;
-      background: #f4f4f4;
+      padding: 20px;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      min-height: 100vh;
     }
 
     .container {
-      max-width: 500px;
-      margin: 60px auto;
-      padding: 30px;
-      background: white;
+      background-color: #fff;
+      padding: 25px;
       border-radius: 10px;
-      box-shadow: 0 0 15px rgba(0,0,0,0.1);
-      position: relative;
-      transition: filter 0.3s ease-in-out;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+      max-width: 450px;
+      width: 100%;
+    }
+
+    .container h2 {
+      text-align: center;
+      font-weight: 700;
+      margin-bottom: 20px;
     }
 
     label {
+      font-weight: 500;
       display: block;
-      margin-bottom: 8px;
-      font-weight: 600;
+      margin-bottom: 6px;
     }
 
-    input, select {
+    input[type="text"],
+    select,
+    input[type="file"] {
       width: 100%;
-      padding: 10px;
-      margin-bottom: 20px;
-      border-radius: 5px;
+      padding: 10px 12px;
+      margin-bottom: 15px;
       border: 1px solid #ccc;
+      border-radius: 5px;
+      font-size: 15px;
+      font-family: 'Roboto', sans-serif;
+      color: #333;
+      background-color: #fff;
+      transition: border 0.3s, box-shadow 0.3s;
+    }
+
+    input[type="text"]:focus,
+    select:focus {
+      border-color: #007bff;
+      box-shadow: 0 0 5px rgba(0,123,255,0.3);
+      outline: none;
     }
 
     button {
       width: 100%;
-      padding: 12px;
-      background-color: #0066cc;
+      background-color: #007bff;
       color: white;
+      padding: 12px;
       border: none;
       border-radius: 5px;
-      font-weight: 600;
+      font-size: 16px;
       cursor: pointer;
-      transition: background 0.3s ease;
     }
 
     button:hover {
-      background-color: #004c99;
+      background-color: #0056b3;
     }
 
-    .blurred {
-      filter: blur(5px);
-      pointer-events: none;
-    }
-
-    .success-message {
-      position: fixed;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      background: white;
-      padding: 30px 40px;
-      border-radius: 10px;
-      box-shadow: 0 0 25px rgba(0, 0, 0, 0.3);
-      z-index: 100;
-      font-size: 20px;
-      font-weight: bold;
+    #confirmation {
+      margin-top: 15px;
+      color: green;
+      font-weight: 600;
       text-align: center;
-      display: none;
-      animation: fadeInOut 5s forwards;
     }
 
-    @keyframes fadeInOut {
-      0% { opacity: 0; }
-      10% { opacity: 1; }
-      90% { opacity: 1; }
-      100% { opacity: 0; display: none; }
+    #logo {
+      display: block;
+      margin: 0 auto 15px auto;
+      max-width: 120px;
+    }
+
+    .hidden {
+      display: none;
     }
   </style>
 </head>
 <body>
+  <div class="container">
+    <img src="https://via.placeholder.com/150x50?text=Anax+Logo" alt="Anax Logo" id="logo" />
+    <h2>Anax Attendance Form</h2>
 
-<div id="main-container" class="container">
-  <form id="attendanceForm" action="https://anaxx.app.n8n.cloud/webhook/attendance-form" method="POST" enctype="multipart/form-data">
-    <label for="siteName">Site Name</label>
-    <input type="text" id="siteName" name="Site Name" required />
+    <form id="attendanceForm" method="POST" action="https://script.google.com/macros/s/AKfycbwUY_6y9rttyur6cox5HvZWHGbSlZr4RQW8Pxt-6Mpyw5yfchfocKihgSKlDHXlY3dljw/exec">
+      <label for="shift">Shift</label>
+      <select id="shift" name="shift" required>
+        <option value="">Select Shift</option>
+        <option value="Day">Day</option>
+        <option value="Night">Night</option>
+      </select>
 
-    <label for="supervisor">Supervisor Name</label>
-    <input type="text" id="supervisor" name="Supervisor" required />
+      <label for="site">Site Name</label>
+      <select id="site" name="site" required onchange="handleSiteChange()">
+        <option value="">Select Site</option>
+        <option value="Jeevan Lifestyle (Phase 3-4)">Jeevan Lifestyle (Phase 3-4)</option>
+        <option value="Jeevan Lifestyle (Phase 5)">Jeevan Lifestyle (Phase 5)</option>
+        <option value="Konark Garden">Konark Garden</option>
+        <option value="Shreeji Iconic">Shreeji Iconic</option>
+        <option value="Kalp Green">Kalp Green</option>
+        <option value="Shubham Karoti">Shubham Karoti</option>
+        <option value="Other">Other</option>
+      </select>
 
-    <label for="guard1">Guard 01</label>
-    <input type="text" id="guard1" name="Guard 01" />
+      <div id="otherSiteWrapper" class="hidden">
+        <label for="otherSite">Specify Site Name</label>
+        <input type="text" id="otherSite" name="otherSite" placeholder="Enter Site Name" />
+      </div>
 
-    <label for="guard2">Guard 02</label>
-    <input type="text" id="guard2" name="Guard 02" />
+      <div id="supervisorWrapper">
+        <label for="supervisorName">Supervisor Name</label>
+        <input type="text" id="supervisorName" name="supervisorName" placeholder="Enter Supervisor Name" />
+      </div>
 
-    <label for="guard3">Guard 03</label>
-    <input type="text" id="guard3" name="Guard 03" />
+      <label for="guard1">Guard Name 01</label>
+      <input type="text" id="guard1" name="guard1" placeholder="Enter Guard Name 01" required />
 
-    <label for="photo">Upload Photo</label>
-    <<input type="file" name="Photo" accept="image/*" required />
+      <label for="guard2">Guard Name 02</label>
+      <input type="text" id="guard2" name="guard2" placeholder="Enter Guard Name 02" required />
 
-    <button type="submit">Submit Attendance</button>
-  </form>
-</div>
+      <div id="guard3Wrapper" class="hidden">
+        <label for="guard3">Guard Name 03</label>
+        <input type="text" id="guard3" name="guard3" placeholder="Enter Guard Name 03" />
+      </div>
 
-<div id="successMessage" class="success-message">
-  ✅ Attendance submitted successfully!
-</div>
+      <label for="photo">Upload Photo</label>
+      <input type="file" id="photo" name="photo" accept="image/*" required />
 
-<script>
-  const form = document.getElementById('attendanceForm');
-  const container = document.getElementById('main-container');
-  const successMessage = document.getElementById('successMessage');
+      <!-- Hidden Date/Time/Location -->
+      <input type="hidden" id="datetime" name="datetime" />
+      <input type="hidden" id="location" name="location" />
 
-  form.addEventListener('submit', function (e) {
-    e.preventDefault();
+      <button type="submit">Submit</button>
+    </form>
 
-    const formData = new FormData(form);
+    <div id="confirmation"></div>
+  </div>
 
-    fetch(form.action, {
-      method: 'POST',
-      body: formData
-    })
-    .then(() => {
-      container.classList.add('blurred');
-      successMessage.style.display = 'block';
-      form.reset();
+  <script>
+    function handleSiteChange() {
+      const site = document.getElementById('site').value;
+      const guard3Wrapper = document.getElementById('guard3Wrapper');
+      const otherSiteWrapper = document.getElementById('otherSiteWrapper');
+      const supervisorWrapper = document.getElementById('supervisorWrapper');
+
+      const showGuard3 = site === "Jeevan Lifestyle (Phase 3-4)";
+      const hideSupervisorSites = [
+        "Jeevan Lifestyle (Phase 5)",
+        "Konark Garden",
+        "Shreeji Iconic",
+        "Kalp Green",
+        "Shubham Karoti"
+      ];
+
+      guard3Wrapper.classList.toggle('hidden', !showGuard3);
+      otherSiteWrapper.classList.toggle('hidden', site !== "Other");
+      supervisorWrapper.classList.toggle('hidden', hideSupervisorSites.includes(site));
+    }
+
+    function setDateTimeAndLocation() {
+      const datetime = new Date().toLocaleString();
+      document.getElementById('datetime').value = datetime;
+
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(position => {
+          const loc = `${position.coords.latitude},${position.coords.longitude}`;
+          document.getElementById('location').value = loc;
+        });
+      }
+    }
+
+    document.getElementById('attendanceForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+      setDateTimeAndLocation();
+
+      document.getElementById('confirmation').innerText = "✅ Form submitted successfully. Great job team!";
       setTimeout(() => {
-        successMessage.style.display = 'none';
-        container.classList.remove('blurred');
+        document.getElementById('attendanceForm').reset();
+        document.getElementById('confirmation').innerText = "";
+        document.getElementById('guard3Wrapper').classList.add('hidden');
+        document.getElementById('otherSiteWrapper').classList.add('hidden');
+        document.getElementById('supervisorWrapper').classList.remove('hidden');
       }, 5000);
-    })
-    .catch((error) => {
-      alert("Error submitting form: " + error.message);
     });
-  });
-</script>
 
+    // Set datetime and location on load
+    window.onload = setDateTimeAndLocation;
+  </script>
 </body>
 </html>
