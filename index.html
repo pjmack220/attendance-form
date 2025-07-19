@@ -1,136 +1,77 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta charset="UTF-8">
   <title>Attendance Form</title>
   <style>
     body {
       font-family: Arial, sans-serif;
-      background: #f2f2f2;
+      background-color: #f2f2f2;
       padding: 20px;
-    }
-    form {
-      background: white;
-      padding: 20px;
-      border-radius: 10px;
-      max-width: 600px;
+      max-width: 500px;
       margin: auto;
     }
-    input, select, textarea {
-      width: 100%;
-      margin-bottom: 15px;
-      padding: 10px;
-      border: 1px solid #ccc;
-      border-radius: 6px;
+
+    h2 {
+      text-align: center;
     }
+
+    label {
+      display: block;
+      margin-top: 15px;
+      font-weight: bold;
+    }
+
+    input[type="text"],
     input[type="file"] {
-      padding: 5px;
+      width: 100%;
+      padding: 10px;
+      margin-top: 5px;
+      box-sizing: border-box;
     }
+
     button {
-      background-color: #28a745;
+      width: 100%;
+      padding: 12px;
+      background-color: #007bff;
       color: white;
       border: none;
-      padding: 12px;
-      border-radius: 6px;
+      margin-top: 20px;
+      font-size: 16px;
       cursor: pointer;
-      width: 100%;
     }
+
     button:hover {
-      background-color: #218838;
-    }
-    .hidden {
-      display: none;
+      background-color: #0056b3;
     }
   </style>
 </head>
 <body>
 
-  <h2 style="text-align:center;">🛡️ Daily Attendance Form</h2>
+  <h2>Attendance Form</h2>
 
-  <form id="attendanceForm">
-    <label>📍 Site Name:</label>
-    <select id="site" name="site" required onchange="updateSupervisors()">
-      <option value="">-- Select Site --</option>
-      <option value="Konark">Konark</option>
-      <option value="Shubham Karoti">Shubham Karoti</option>
-      <option value="Jeevan Lifestyle">Jeevan Lifestyle</option>
-    </select>
+  <form action="https://anaxx.app.n8n.cloud/webhook-test/attendance-form" method="POST" enctype="multipart/form-data">
+    
+    <label for="siteName">Site Name</label>
+    <input type="text" id="siteName" name="Site Name" required>
 
-    <label>🧑‍💼 Supervisor:</label>
-    <select id="supervisor" name="supervisor" required>
-      <option value="">-- Select Supervisor --</option>
-    </select>
+    <label for="supervisor">Supervisor Name</label>
+    <input type="text" id="supervisor" name="Supervisor" required>
 
-    <label>🛡️ Guard 01:</label>
-    <input type="text" name="guard01" required />
+    <label for="guard1">Guard 01</label>
+    <input type="text" id="guard1" name="Guard 01">
 
-    <label>🛡️ Guard 02:</label>
-    <input type="text" name="guard02" />
+    <label for="guard2">Guard 02</label>
+    <input type="text" id="guard2" name="Guard 02">
 
-    <label>🛡️ Guard 03:</label>
-    <input type="text" name="guard03" />
+    <label for="guard3">Guard 03</label>
+    <input type="text" id="guard3" name="Guard 03">
 
-    <label>🛡️ Guard 04:</label>
-    <input type="text" name="guard04" />
+    <label for="photo">Upload Photo</label>
+    <input type="file" id="photo" name="Photo" accept="image/*" capture="environment" required>
 
-    <label>🛡️ Guard 05:</label>
-    <input type="text" name="guard05" />
-
-    <label>📷 Upload Photo (Camera or File):</label>
-    <input type="file" accept="image/*" capture="environment" name="photo" required />
-
-    <input type="hidden" id="timestamp" name="timestamp" />
-
-    <button type="submit">✅ Submit Attendance</button>
+    <button type="submit">Submit</button>
   </form>
 
-  <script>
-    // Supervisors based on Site
-    const supervisorsBySite = {
-      "Konark": ["Amar P", "Ravi S"],
-      "Shubham Karoti": ["Sanjay M", "Mehul P"],
-      "Jeevan Lifestyle": ["Sunil D", "Harish N"]
-    };
-
-    function updateSupervisors() {
-      const site = document.getElementById("site").value;
-      const supervisorSelect = document.getElementById("supervisor");
-      supervisorSelect.innerHTML = '<option value="">-- Select Supervisor --</option>';
-      if (supervisorsBySite[site]) {
-        supervisorsBySite[site].forEach(name => {
-          const option = document.createElement("option");
-          option.value = name;
-          option.text = name;
-          supervisorSelect.appendChild(option);
-        });
-      }
-    }
-
-    // Auto-fill current timestamp
-    document.getElementById("timestamp").value = new Date().toLocaleString('en-GB');
-
-    // Submit to n8n Webhook
-    document.getElementById("attendanceForm").addEventListener("submit", async function(e) {
-      e.preventDefault();
-
-      const formData = new FormData(this);
-
-      const webhookUrl =   <form action="https://anaxx.app.n8n.cloud/webhook-test/attendance-form" method="POST" enctype="multipart/form-data">
-          body: formData
-        });
-
-        if (response.ok) {
-          alert("✅ Attendance submitted successfully!");
-          this.reset();
-        } else {
-          alert("❌ Submission failed. Please try again.");
-        }
-      } catch (error) {
-        alert("❌ Error connecting to server.");
-        console.error(error);
-      }
-    });
-  </script>
 </body>
 </html>
