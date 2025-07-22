@@ -99,7 +99,7 @@
     <img src="https://via.placeholder.com/150x50?text=Anax+Logo" alt="Anax Logo" id="logo" />
     <h2>Anax Attendance Form</h2>
 
-    <form id="attendanceForm" method="POST" action="https://anaxx.app.n8n.cloud/webhook-test/attendence" enctype="multipart/form-data">
+    <form id="attendanceForm" method="POST" action="https://anaxx.app.n8n.cloud/webhook/attendence" enctype="multipart/form-data">
       <label for="shift">Shift</label>
       <select id="shift" name="shift" required>
         <option value="">Select Shift</option>
@@ -125,4 +125,80 @@
       </div>
 
       <div id="supervisorWrapper">
-        <label for="supervisorName">S
+        <label for="supervisorName">Supervisor Name</label>
+        <input type="text" id="supervisorName" name="supervisorName" placeholder="Enter Supervisor Name" />
+      </div>
+
+      <label for="guard1">Guard Name 01</label>
+      <input type="text" id="guard1" name="guard1" placeholder="Enter Guard Name 01" required />
+
+      <label for="guard2">Guard Name 02</label>
+      <input type="text" id="guard2" name="guard2" placeholder="Enter Guard Name 02" required />
+
+      <div id="guard3Wrapper" class="hidden">
+        <label for="guard3">Guard Name 03</label>
+        <input type="text" id="guard3" name="guard3" placeholder="Enter Guard Name 03" />
+      </div>
+
+      <label for="photo">Upload Photo</label>
+      <input type="file" id="photo" name="photo" accept="image/*" required />
+
+      <!-- Hidden Date/Time/Location -->
+      <input type="hidden" id="datetime" name="datetime" />
+      <input type="hidden" id="location" name="location" />
+
+      <button type="submit">Submit</button>
+    </form>
+
+    <div id="confirmation"></div>
+  </div>
+
+  <script>
+    function handleSiteChange() {
+      const site = document.getElementById('site').value;
+      const guard3Wrapper = document.getElementById('guard3Wrapper');
+      const otherSiteWrapper = document.getElementById('otherSiteWrapper');
+      const supervisorWrapper = document.getElementById('supervisorWrapper');
+
+      const showGuard3 = site === "Jeevan Lifestyle (Phase 3-4)";
+      const hideSupervisorSites = [
+        "Jeevan Lifestyle (Phase 5)",
+        "Konark Garden",
+        "Shreeji Iconic",
+        "Kalp Green",
+        "Shubham Karoti"
+      ];
+
+      guard3Wrapper.classList.toggle('hidden', !showGuard3);
+      otherSiteWrapper.classList.toggle('hidden', site !== "Other");
+      supervisorWrapper.classList.toggle('hidden', hideSupervisorSites.includes(site));
+    }
+
+    function setDateTimeAndLocation() {
+      const datetime = new Date().toLocaleString();
+      document.getElementById('datetime').value = datetime;
+
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(position => {
+          const loc = `${position.coords.latitude},${position.coords.longitude}`;
+          document.getElementById('location').value = loc;
+        });
+      }
+    }
+
+    document.getElementById('attendanceForm').addEventListener('submit', function(e) {
+      setDateTimeAndLocation();
+      document.getElementById('confirmation').innerText = "✅ Form submitted successfully. Great job team!";
+      setTimeout(() => {
+        document.getElementById('attendanceForm').reset();
+        document.getElementById('confirmation').innerText = "";
+        document.getElementById('guard3Wrapper').classList.add('hidden');
+        document.getElementById('otherSiteWrapper').classList.add('hidden');
+        document.getElementById('supervisorWrapper').classList.remove('hidden');
+      }, 5000);
+    });
+
+    window.onload = setDateTimeAndLocation;
+  </script>
+</body>
+</html>
