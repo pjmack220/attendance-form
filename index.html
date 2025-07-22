@@ -1,204 +1,217 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Anax Daily Attendance</title>
+  <meta charset="UTF-8">
+  <title>Anax Attendance Form</title>
+  <link href="https://fonts.googleapis.com/css2?family=Monoton&display=swap" rel="stylesheet">
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap');
-
     body {
-      font-family: 'Roboto', sans-serif;
-      background-color: #f5f7fa;
+      font-family: Arial, sans-serif;
+      background: #f2f2f2;
       margin: 0;
-      padding: 20px;
-      display: flex;
-      justify-content: center;
-      align-items: flex-start;
-      min-height: 100vh;
+      padding: 0;
     }
-
     .container {
-      background-color: #fff;
+      max-width: 500px;
+      margin: 30px auto;
+      background: #fff;
       padding: 25px;
-      border-radius: 10px;
-      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-      max-width: 450px;
-      width: 100%;
+      border-radius: 12px;
+      box-shadow: 0 0 12px rgba(0, 0, 0, 0.1);
     }
-
-    .container h2 {
+    .branding {
       text-align: center;
-      font-weight: 700;
       margin-bottom: 20px;
     }
-
+    .branding img {
+      width: 80px;
+      border-radius: 50%;
+    }
+    .branding h1 {
+      font-family: 'Monoton', cursive;
+      font-size: 22px;
+      margin: 10px 0 0;
+    }
     label {
-      font-weight: 500;
       display: block;
-      margin-bottom: 6px;
+      margin-top: 15px;
+      font-weight: bold;
     }
-
-    input[type="text"],
-    select,
-    input[type="file"] {
+    input, select, textarea {
       width: 100%;
-      padding: 10px 12px;
-      margin-bottom: 15px;
+      padding: 10px;
+      margin-top: 5px;
       border: 1px solid #ccc;
-      border-radius: 5px;
-      font-size: 15px;
-      font-family: 'Roboto', sans-serif;
-      color: #333;
-      background-color: #fff;
-      transition: border 0.3s, box-shadow 0.3s;
+      border-radius: 6px;
+      box-sizing: border-box;
     }
-
-    input[type="text"]:focus,
-    select:focus {
-      border-color: #007bff;
-      box-shadow: 0 0 5px rgba(0,123,255,0.3);
-      outline: none;
-    }
-
     button {
-      width: 100%;
       background-color: #007bff;
       color: white;
-      padding: 12px;
       border: none;
-      border-radius: 5px;
-      font-size: 16px;
+      padding: 12px;
+      border-radius: 6px;
+      margin-top: 20px;
       cursor: pointer;
+      width: 100%;
+      font-size: 16px;
     }
-
     button:hover {
       background-color: #0056b3;
     }
-
-    #confirmation {
-      margin-top: 15px;
-      color: green;
-      font-weight: 600;
-      text-align: center;
-    }
-
-    #logo {
-      display: block;
-      margin: 0 auto 15px auto;
-      max-width: 120px;
-    }
-
     .hidden {
       display: none;
     }
   </style>
 </head>
 <body>
-  <div class="container">
-    <img src="https://via.placeholder.com/150x50?text=Anax+Logo" alt="Anax Logo" id="logo" />
-    <h2>Anax Attendance Form</h2>
 
-    <form id="attendanceForm" method="POST" action="https://anaxx.app.n8n.cloud/webhook/attendence" enctype="multipart/form-data">
+  <div class="container">
+    <div class="branding">
+      <img src="https://i.ibb.co/YdN8Z1N/anax-logo.png" alt="Anax Logo" />
+      <h1>ANAX ATTENDANCE</h1>
+    </div>
+
+    <form id="attendanceForm">
+      <!-- Hidden Auto Date -->
+      <input type="hidden" id="timestamp" name="Timestamp">
+
+      <!-- Hidden Location -->
+      <input type="hidden" id="latitude" name="Latitude">
+      <input type="hidden" id="longitude" name="Longitude">
+      <input type="hidden" id="location" name="Location">
+
+      <!-- Shift -->
       <label for="shift">Shift</label>
-      <select id="shift" name="shift" required>
-        <option value="">Select Shift</option>
+      <select id="shift" name="Shift" required>
+        <option value="">Select</option>
         <option value="Day">Day</option>
         <option value="Night">Night</option>
       </select>
 
-      <label for="site">Site Name</label>
-      <select id="site" name="site" required onchange="handleSiteChange()">
+      <!-- Site -->
+      <label for="site">Site</label>
+      <select id="site" name="Site Code" required>
         <option value="">Select Site</option>
-        <option value="Jeevan Lifestyle (Phase 3-4)">Jeevan Lifestyle (Phase 3-4)</option>
-        <option value="Jeevan Lifestyle (Phase 5)">Jeevan Lifestyle (Phase 5)</option>
-        <option value="Konark Garden">Konark Garden</option>
-        <option value="Shreeji Iconic">Shreeji Iconic</option>
-        <option value="Kalp Green">Kalp Green</option>
-        <option value="Shubham Karoti">Shubham Karoti</option>
+        <option value="JLP5">Jeevan Lifestyle (Phase 5)</option>
+        <option value="KG">Konark Garden</option>
+        <option value="SI">Shreeji Iconic</option>
+        <option value="KGP">Kalp Green</option>
+        <option value="SK">Shubham Karoti</option>
+        <option value="JLP3">Jeevan Lifestyle (Phase 3-4)</option>
         <option value="Other">Other</option>
       </select>
 
-      <div id="otherSiteWrapper" class="hidden">
-        <label for="otherSite">Specify Site Name</label>
-        <input type="text" id="otherSite" name="otherSite" placeholder="Enter Site Name" />
+      <!-- If Other Site -->
+      <div id="customSiteWrapper" class="hidden">
+        <label for="customSite">Mention Site Name</label>
+        <input type="text" id="customSite" name="Custom Site">
       </div>
 
+      <!-- Supervisor -->
       <div id="supervisorWrapper">
-        <label for="supervisorName">Supervisor Name</label>
-        <input type="text" id="supervisorName" name="supervisorName" placeholder="Enter Supervisor Name" />
+        <label for="supervisor">Supervisor Name</label>
+        <input type="text" id="supervisor" name="Supervisor" required>
       </div>
 
+      <!-- Guard 01 -->
       <label for="guard1">Guard Name 01</label>
-      <input type="text" id="guard1" name="guard1" placeholder="Enter Guard Name 01" required />
+      <input type="text" id="guard1" name="Guard 1" required>
 
+      <!-- Guard 02 -->
       <label for="guard2">Guard Name 02</label>
-      <input type="text" id="guard2" name="guard2" placeholder="Enter Guard Name 02" required />
+      <input type="text" id="guard2" name="Guard 2" required>
 
-      <div id="guard3Wrapper" class="hidden">
+      <!-- Guard 03 -->
+      <div id="guard3Wrapper">
         <label for="guard3">Guard Name 03</label>
-        <input type="text" id="guard3" name="guard3" placeholder="Enter Guard Name 03" />
+        <input type="text" id="guard3" name="Guard 3">
       </div>
 
+      <!-- Photo Upload -->
       <label for="photo">Upload Photo</label>
-      <input type="file" id="photo" name="photo" accept="image/*" required />
+      <input type="file" id="photo" name="Photo" accept="image/*" required>
 
-      <!-- Hidden Date/Time/Location -->
-      <input type="hidden" id="datetime" name="datetime" />
-      <input type="hidden" id="location" name="location" />
-
-      <button type="submit">Submit</button>
+      <button type="submit">Submit Attendance</button>
     </form>
-
-    <div id="confirmation"></div>
   </div>
 
   <script>
-    function handleSiteChange() {
-      const site = document.getElementById('site').value;
-      const guard3Wrapper = document.getElementById('guard3Wrapper');
-      const otherSiteWrapper = document.getElementById('otherSiteWrapper');
-      const supervisorWrapper = document.getElementById('supervisorWrapper');
+    // Set Timestamp
+    document.getElementById("timestamp").value = new Date().toLocaleString();
 
-      const showGuard3 = site === "Jeevan Lifestyle (Phase 3-4)";
-      const hideSupervisorSites = [
-        "Jeevan Lifestyle (Phase 5)",
-        "Konark Garden",
-        "Shreeji Iconic",
-        "Kalp Green",
-        "Shubham Karoti"
-      ];
-
-      guard3Wrapper.classList.toggle('hidden', !showGuard3);
-      otherSiteWrapper.classList.toggle('hidden', site !== "Other");
-      supervisorWrapper.classList.toggle('hidden', hideSupervisorSites.includes(site));
+    // Location auto-fill
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(function (position) {
+        document.getElementById("latitude").value = position.coords.latitude;
+        document.getElementById("longitude").value = position.coords.longitude;
+        document.getElementById("location").value = `Lat: ${position.coords.latitude}, Long: ${position.coords.longitude}`;
+      });
     }
 
-    function setDateTimeAndLocation() {
-      const datetime = new Date().toLocaleString();
-      document.getElementById('datetime').value = datetime;
+    // Show/hide Guard 3 & Supervisor based on site
+    const siteSelect = document.getElementById("site");
+    const guard3Wrapper = document.getElementById("guard3Wrapper");
+    const customSiteWrapper = document.getElementById("customSiteWrapper");
+    const supervisorWrapper = document.getElementById("supervisorWrapper");
 
-      if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(position => {
-          const loc = `${position.coords.latitude},${position.coords.longitude}`;
-          document.getElementById('location').value = loc;
-        });
+    siteSelect.addEventListener("change", () => {
+      const val = siteSelect.value;
+      const twoGuardSites = ["JLP5", "KG", "SI", "KGP", "SK"];
+
+      // Show/hide Guard 3
+      if (twoGuardSites.includes(val)) {
+        guard3Wrapper.classList.add("hidden");
+      } else {
+        guard3Wrapper.classList.remove("hidden");
       }
-    }
 
-    document.getElementById('attendanceForm').addEventListener('submit', function(e) {
-      setDateTimeAndLocation();
-      document.getElementById('confirmation').innerText = "✅ Form submitted successfully. Great job team!";
-      setTimeout(() => {
-        document.getElementById('attendanceForm').reset();
-        document.getElementById('confirmation').innerText = "";
-        document.getElementById('guard3Wrapper').classList.add('hidden');
-        document.getElementById('otherSiteWrapper').classList.add('hidden');
-        document.getElementById('supervisorWrapper').classList.remove('hidden');
-      }, 5000);
+      // Show/hide Supervisor
+      if (twoGuardSites.includes(val)) {
+        supervisorWrapper.classList.add("hidden");
+        document.getElementById("supervisor").value = "NA";
+      } else {
+        supervisorWrapper.classList.remove("hidden");
+        document.getElementById("supervisor").value = "";
+      }
+
+      // Show/hide custom site
+      if (val === "Other") {
+        customSiteWrapper.classList.remove("hidden");
+      } else {
+        customSiteWrapper.classList.add("hidden");
+        document.getElementById("customSite").value = "";
+      }
     });
 
-    window.onload = setDateTimeAndLocation;
+    // Submit form with fetch
+    document.getElementById("attendanceForm").addEventListener("submit", function (e) {
+      e.preventDefault();
+
+      const form = document.getElementById("attendanceForm");
+      const formData = new FormData(form);
+
+      fetch("https://anaxx.app.n8n.cloud/webhook-test/attendence", {
+        method: "POST",
+        body: formData
+      })
+      .then(response => {
+        if (response.ok) {
+          alert("✅ Form submitted successfully!");
+          setTimeout(() => {
+            form.reset();
+            location.reload();
+          }, 2000);
+        } else {
+          alert("❌ Submission failed. Please try again.");
+        }
+      })
+      .catch(error => {
+        console.error("Error:", error);
+        alert("⚠️ Something went wrong. Please check your connection.");
+      });
+    });
   </script>
+
 </body>
 </html>
