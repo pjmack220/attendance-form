@@ -6,153 +6,202 @@
   <title>Anax Attendance Form</title>
   <style>
     body {
-      font-family: 'monospace';
-      background-color: #f4f4f4;
-      padding: 20px;
-    }
-    .container {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
       max-width: 600px;
       margin: auto;
-      background: white;
       padding: 20px;
-      border-radius: 12px;
-      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      background: #f4f4f4;
     }
+
     h2 {
+      font-family: 'monospace';
       text-align: center;
-      font-weight: bold;
     }
+
+    .form-group {
+      margin-bottom: 15px;
+    }
+
     label {
       display: block;
-      margin-top: 10px;
+      margin-bottom: 6px;
+      font-weight: bold;
     }
+
     input, select, textarea {
       width: 100%;
       padding: 10px;
-      margin-top: 5px;
-      border-radius: 6px;
+      border-radius: 5px;
       border: 1px solid #ccc;
     }
-    #submitBtn {
+
+    button {
       background-color: #007bff;
       color: white;
+      padding: 10px;
       border: none;
+      border-radius: 5px;
+      width: 100%;
+      font-size: 16px;
       cursor: pointer;
-      margin-top: 20px;
     }
-    #submitBtn:hover {
+
+    button:hover {
       background-color: #0056b3;
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    .branding {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    .branding img {
+      width: 100px;
+      margin-bottom: 10px;
     }
   </style>
 </head>
 <body>
-  <div class="container">
-    <h2>Anax Security Attendance</h2>
 
-    <form id="attendanceForm">
-      <!-- Hidden Fields -->
-      <input type="hidden" id="timestamp" name="timestamp" />
-      <input type="hidden" id="location" name="location" />
-      <input type="hidden" id="latitude" name="latitude" />
-      <input type="hidden" id="longitude" name="longitude" />
+  <div class="branding">
+    <img src="https://i.imgur.com/1X5GRO2.png" alt="Anax Logo" />
+    <h2>Anax Daily Attendance</h2>
+  </div>
 
+  <form id="attendanceForm">
+    <div class="form-group">
       <label for="shift">Shift</label>
-      <select id="shift" name="shift" required>
+      <select id="shift" name="Shift" required>
         <option value="">Select Shift</option>
         <option value="Day">Day</option>
         <option value="Night">Night</option>
       </select>
+    </div>
 
-      <label for="site">Site</label>
-      <select id="site" name="site" required onchange="handleSiteChange()">
+    <div class="form-group">
+      <label for="site">Site Name</label>
+      <select id="site" name="Site Code" required onchange="handleSiteChange(this.value)">
         <option value="">Select Site</option>
-        <option value="JL3-4">Jeevan Lifestyle (Phase 3-4)</option>
+        <option value="JL3">Jeevan Lifestyle (Phase 3-4)</option>
         <option value="JL5">Jeevan Lifestyle (Phase 5)</option>
         <option value="KG">Konark Garden</option>
         <option value="SI">Shreeji Iconic</option>
         <option value="KPG">Kalp Green</option>
         <option value="SK">Shubham Karoti</option>
-        <option value="OTHER">Other</option>
+        <option value="Other">Other</option>
       </select>
+    </div>
 
-      <div id="customSiteWrapper" style="display:none;">
-        <label for="customSite">Enter Site Name</label>
-        <input type="text" id="customSite" name="customSite" />
-      </div>
+    <div class="form-group hidden" id="customSiteWrapper">
+      <label for="customSite">Enter Site Name</label>
+      <input type="text" id="customSite" name="Custom Site" />
+    </div>
 
-      <div id="supervisorWrapper">
-        <label for="supervisor">Supervisor Name</label>
-        <input type="text" id="supervisor" name="supervisor" required />
-      </div>
+    <div class="form-group" id="supervisorWrapper">
+      <label for="supervisor">Supervisor Name</label>
+      <input type="text" id="supervisor" name="Supervisor" required />
+    </div>
 
+    <div class="form-group">
       <label for="guard1">Guard Name 01</label>
-      <input type="text" id="guard1" name="guard1" required />
+      <input type="text" id="guard1" name="Guard 1" required />
+    </div>
 
+    <div class="form-group">
       <label for="guard2">Guard Name 02</label>
-      <input type="text" id="guard2" name="guard2" required />
+      <input type="text" id="guard2" name="Guard 2" required />
+    </div>
 
-      <div id="guard3Wrapper">
-        <label for="guard3">Guard Name 03</label>
-        <input type="text" id="guard3" name="guard3" />
-      </div>
+    <div class="form-group" id="guard3Wrapper">
+      <label for="guard3">Guard Name 03</label>
+      <input type="text" id="guard3" name="Guard 3" />
+    </div>
 
+    <div class="form-group">
       <label for="photo">Upload Photo</label>
-      <input type="file" id="photo" name="photo" accept="image/*" required />
+      <input type="file" id="photo" name="Photo" accept="image/*" capture="environment" required />
+    </div>
 
-      <button type="submit" id="submitBtn">Submit</button>
-    </form>
-  </div>
+    <!-- Hidden Fields -->
+    <input type="hidden" id="timestamp" name="Timestamp" />
+    <input type="hidden" id="location" name="Location" />
+    <input type="hidden" id="latitude" name="Latitude" />
+    <input type="hidden" id="longitude" name="Longitude" />
+
+    <button type="submit">Submit</button>
+  </form>
 
   <script>
-    // Timestamp and location
-    window.onload = function () {
-      document.getElementById('timestamp').value = new Date().toISOString();
+    const form = document.getElementById('attendanceForm');
+    const siteDropdown = document.getElementById('site');
+    const supervisorWrapper = document.getElementById('supervisorWrapper');
+    const guard3Wrapper = document.getElementById('guard3Wrapper');
+    const customSiteWrapper = document.getElementById('customSiteWrapper');
 
-      if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition((position) => {
-          document.getElementById('location').value = `${position.coords.latitude},${position.coords.longitude}`;
-          document.getElementById('latitude').value = position.coords.latitude;
-          document.getElementById('longitude').value = position.coords.longitude;
-        });
+    function handleSiteChange(value) {
+      const hideSupervisorSites = ['JL5', 'KG', 'SI', 'KPG', 'SK'];
+      const showOnlyTwoGuards = hideSupervisorSites.includes(value);
+
+      supervisorWrapper.style.display = showOnlyTwoGuards ? 'none' : 'block';
+      guard3Wrapper.style.display = showOnlyTwoGuards ? 'none' : 'block';
+
+      customSiteWrapper.classList.toggle('hidden', value !== 'Other');
+      if (value !== 'Other') {
+        document.getElementById('customSite').value = '';
       }
-    };
-
-    // Site logic
-    function handleSiteChange() {
-      const site = document.getElementById('site').value;
-      const customSite = document.getElementById('customSiteWrapper');
-      const supervisor = document.getElementById('supervisorWrapper');
-      const guard3 = document.getElementById('guard3Wrapper');
-
-      customSite.style.display = (site === 'OTHER') ? 'block' : 'none';
-      supervisor.style.display = ['JL5', 'KG', 'SI', 'KPG', 'SK'].includes(site) ? 'none' : 'block';
-      guard3.style.display = ['JL5', 'KG', 'SI', 'KPG', 'SK'].includes(site) ? 'none' : 'block';
     }
 
-    // Form Submission
-    document.getElementById('attendanceForm').addEventListener('submit', function (e) {
+    function getLocation() {
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(position => {
+          document.getElementById('latitude').value = position.coords.latitude;
+          document.getElementById('longitude').value = position.coords.longitude;
+          document.getElementById('location').value = `Lat: ${position.coords.latitude}, Lon: ${position.coords.longitude}`;
+        });
+      }
+    }
+
+    function setTimestamp() {
+      const now = new Date().toISOString();
+      document.getElementById('timestamp').value = now;
+    }
+
+    form.addEventListener('submit', function(e) {
       e.preventDefault();
+      setTimestamp();
+      getLocation();
 
-      const form = document.getElementById('attendanceForm');
-      const formData = new FormData(form);
+      setTimeout(() => {
+        const formData = new FormData(form);
 
-      fetch("https://anaxx.app.n8n.cloud/webhook-test/attendence", {
-        method: "POST",
-        body: formData
-      })
-      .then(response => {
-        if (response.ok) {
-          alert("✅ Attendance submitted successfully. Keep up the good work!");
-          setTimeout(() => form.reset(), 5000);
-        } else {
-          alert("❌ Error submitting the form.");
-        }
-      })
-      .catch(error => {
-        alert("⚠️ Submission failed. Check your connection.");
-        console.error(error);
-      });
+        fetch("https://anaxx.app.n8n.cloud/webhook-test/attendence", {
+          method: "POST",
+          body: formData
+        })
+        .then(response => {
+          if (response.ok) {
+            alert("✅ Form submitted successfully!\nKeep up the good work.");
+            form.reset();
+            handleSiteChange(""); // Reset visibility
+          } else {
+            alert("❌ Failed to submit. Try again.");
+          }
+        })
+        .catch(error => {
+          console.error("Error:", error);
+          alert("Network error occurred.");
+        });
+      }, 1000); // Slight delay to allow location/timestamp to update
     });
+
+    window.onload = function () {
+      getLocation();
+      setTimestamp();
+    };
   </script>
 </body>
 </html>
