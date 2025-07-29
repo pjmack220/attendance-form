@@ -1,57 +1,94 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Security Daily Attendance</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Security Patrol Attendance</title>
   <style>
     body {
-      font-family: Arial, sans-serif;
-      padding: 20px;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #f4f6f8;
+      margin: 0;
+      padding: 30px;
+      color: #212529;
+    }
+    h2 {
+      text-align: center;
+      color: #2c3e50;
+      margin-bottom: 25px;
     }
     form {
-      border: 1px solid #ccc;
-      padding: 20px;
-      width: 300px;
-      border-radius: 10px;
-      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      max-width: 640px;
+      margin: auto;
+      background: #ffffff;
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
     }
     label {
       display: block;
-      margin-top: 10px;
+      margin-top: 18px;
+      font-weight: 600;
+      color: #34495e;
     }
-    input, select {
+    input[type="text"], input[type="file"], select {
       width: 100%;
-      padding: 5px;
-      margin-top: 5px;
+      padding: 12px;
+      margin-top: 6px;
+      border: 1px solid #d1d9e6;
+      border-radius: 6px;
+      font-size: 15px;
+      box-sizing: border-box;
     }
-    .submit-btn {
-      margin-top: 20px;
-      background-color: #28a745;
+    input[readonly] {
+      background-color: #f1f3f5;
+    }
+    .photo-preview {
+      display: block;
+      margin-top: 10px;
+      max-width: 100%;
+      height: auto;
+      border-radius: 6px;
+      border: 1px solid #dee2e6;
+    }
+    button[type="submit"] {
+      background-color: #007bff;
       color: white;
+      padding: 14px;
+      margin-top: 25px;
       border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 16px;
+      width: 100%;
+    }
+    button[type="submit"]:hover {
+      background-color: #0056b3;
+    }
+    .autocomplete-list {
+      border: 1px solid #ccc;
+      border-top: none;
+      max-height: 150px;
+      overflow-y: auto;
+      background-color: #fff;
+      position: absolute;
+      z-index: 99;
+      width: calc(100% - 42px);
+      box-shadow: 0px 4px 6px rgba(0,0,0,0.1);
+    }
+    .autocomplete-item {
       padding: 10px;
       cursor: pointer;
-      border-radius: 5px;
+    }
+    .autocomplete-item:hover {
+      background-color: #f1f1f1;
     }
   </style>
 </head>
 <body>
-
-  <h2>Security Daily Attendance</h2>
-
-  <form id="attendance-form">
-    <label for="date">Date (IST):</label>
-    <input type="text" id="date" name="date" readonly>
-
-    <label for="time">Time (IST):</label>
-    <input type="text" id="time" name="time" readonly>
-
-    <label for="guard_name">Guard Name:</label>
-    <input type="text" id="guard_name" name="guard_name" required>
-
-    <label for="site">Site Name:</label>
-    <input type="text" id="site" name="site" required>
-
+  <h2>Security Patrol Attendance Form</h2>
+  <form action="https://anaxx.app.n8n.cloud/webhook-test/Final-Attandence" method="POST" enctype="multipart/form-data">
     <label for="shift">Shift:</label>
     <select id="shift" name="shift" required>
       <option value="">Select Shift</option>
@@ -59,25 +96,115 @@
       <option value="Night">Night</option>
     </select>
 
-    <button type="submit" class="submit-btn">Submit Attendance</button>
+    <label for="siteCode">Site:</label>
+    <div style="position: relative;">
+      <input type="text" id="siteCode" name="siteCode" placeholder="Start typing site name..." autocomplete="off" required />
+      <div id="autocomplete-list" class="autocomplete-list" style="display:none;"></div>
+    </div>
+    <input type="text" id="customSite" name="customSite" placeholder="Enter custom site name" style="display:none; margin-top: 10px;" />
+
+    <div id="supervisorSection" style="display: none;">
+      <label for="supervisor">Supervisor Name:</label>
+      <input type="text" id="supervisor" name="supervisor" />
+    </div>
+
+    <label for="guard1">Guard 1 Name:</label>
+    <input type="text" id="guard1" name="guard1" required />
+
+    <label for="guard2">Guard 2 Name:</label>
+    <input type="text" id="guard2" name="guard2" />
+
+    <label for="guard3">Guard 3 Name:</label>
+    <input type="text" id="guard3" name="guard3" />
+
+    <label for="latitude">Latitude:</label>
+    <input type="text" id="latitude" name="latitude" readonly />
+
+    <label for="longitude">Longitude:</label>
+    <input type="text" id="longitude" name="longitude" readonly />
+
+    <label for="photo">Upload Patrol Photo:</label>
+    <input type="file" id="photo" name="photo" accept="image/*" onchange="previewPhoto(event)" required />
+    <img id="photoPreview" class="photo-preview" style="display:none;" />
+
+    <button type="submit">Submit Patrol Report</button>
   </form>
 
   <script>
-    // Get current date and time in GMT+5:30 (IST)
-    function updateDateTime() {
-      const now = new Date();
-      const istOffset = 5.5 * 60; // minutes
-      const istTime = new Date(now.getTime() + (istOffset + now.getTimezoneOffset()) * 60000);
-      
-      const dateStr = istTime.toISOString().slice(0, 10); // YYYY-MM-DD
-      const timeStr = istTime.toTimeString().slice(0, 8); // HH:MM:SS
+    const sites = [
+      "Jeevan Lifestyle (Phase 3-4)",
+      "Jeevan Lifestyle (Phase 5)",
+      "Konark Garden",
+      "Kalp Green",
+      "Shreeji Iconic",
+      "Other"
+    ];
 
-      document.getElementById("date").value = dateStr;
-      document.getElementById("time").value = timeStr;
+    const siteInput = document.getElementById("siteCode");
+    const customSite = document.getElementById("customSite");
+    const supervisorSection = document.getElementById("supervisorSection");
+    const supervisorInput = document.getElementById("supervisor");
+    const listBox = document.getElementById("autocomplete-list");
+
+    siteInput.addEventListener("input", function () {
+      const value = this.value.toLowerCase();
+      listBox.innerHTML = "";
+      const filtered = sites.filter(site => site.toLowerCase().startsWith(value));
+      if (value.length === 0 || filtered.length === 0) {
+        listBox.style.display = "none";
+        return;
+      }
+      filtered.forEach(site => {
+        const div = document.createElement("div");
+        div.textContent = site;
+        div.classList.add("autocomplete-item");
+        div.addEventListener("click", function () {
+          siteInput.value = site;
+          listBox.innerHTML = "";
+          listBox.style.display = "none";
+          if (site === "Other") {
+            customSite.style.display = "block";
+            customSite.required = true;
+          } else {
+            customSite.style.display = "none";
+            customSite.required = false;
+          }
+          if (site.includes("Jeevan Lifestyle")) {
+            supervisorSection.style.display = "block";
+            supervisorInput.required = true;
+          } else {
+            supervisorSection.style.display = "none";
+            supervisorInput.required = false;
+          }
+        });
+        listBox.appendChild(div);
+      });
+      listBox.style.display = "block";
+    });
+
+    window.onload = function () {
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+          function (position) {
+            document.getElementById("latitude").value = position.coords.latitude;
+            document.getElementById("longitude").value = position.coords.longitude;
+          },
+          function (error) {
+            console.error("Error getting location", error);
+          }
+        );
+      }
+    };
+
+    function previewPhoto(event) {
+      const reader = new FileReader();
+      reader.onload = function () {
+        const preview = document.getElementById("photoPreview");
+        preview.src = reader.result;
+        preview.style.display = "block";
+      };
+      reader.readAsDataURL(event.target.files[0]);
     }
-
-    window.onload = updateDateTime;
   </script>
-
 </body>
 </html>
